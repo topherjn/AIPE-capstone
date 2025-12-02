@@ -2,6 +2,7 @@ import google.generativeai as genai
 import os
 
 def generate_sales_insights(product_name, product_category, value_prop, target_customer, company_data, competitor_data_list):
+
     """
     Constructs the prompt and calls the Gemini API to generate the one-pager.
     """
@@ -9,7 +10,7 @@ def generate_sales_insights(product_name, product_category, value_prop, target_c
     genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
     
     # Initialize the model
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    model = genai.GenerativeModel('gemini-flash-latest')
 
     # Construct the Competitor String
     competitor_text = "\n".join(competitor_data_list) if competitor_data_list else "No competitor data provided."

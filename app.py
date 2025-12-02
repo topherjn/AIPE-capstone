@@ -58,7 +58,8 @@ if submitted:
                     competitor_data_list.append(f"Source: {url}\nContent: {data}")
             
             st.write("Processing data with Gemini Pro...")
-            
+
+    
             # 3. Call AI Agent
             insights = generate_sales_insights(
                 product_name, 
