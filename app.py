@@ -63,7 +63,7 @@ if submitted:
             insights = generate_sales_insights(
                 product_name, 
                 product_category, 
-                value_prop, 
+                value_proposition, 
                 target_customer, 
                 company_data, 
                 competitor_data_list

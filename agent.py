@@ -9,7 +9,7 @@ def generate_sales_insights(product_name, product_category, value_prop, target_c
     genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
     
     # Initialize the model
-    model = genai.GenerativeModel('gemini-pro')
+    model = genai.GenerativeModel('gemini-1.5-flash')
 
     # Construct the Competitor String
     competitor_text = "\n".join(competitor_data_list) if competitor_data_list else "No competitor data provided."
