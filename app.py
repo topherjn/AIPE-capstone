@@ -2,11 +2,13 @@ import streamlit as st
 import os
 from dotenv import load_dotenv
 from scraper import scrape_url
-from agent import generate_sales_insights  # <--- IMPORT THE AGENT
+from agent import generate_sales_insights  
 
 # Load environment variables
+# I.E. the API Key for Google AI
 load_dotenv()
 
+# Set up the basics of the Web page
 st.set_page_config(page_title="Sales Agent", page_icon="💼", layout="wide")
 
 st.title("💼 Sales Assistant Agent")
@@ -20,23 +22,36 @@ with st.sidebar:
     else:
         st.error("Missing API Key")
 
+# Create the form for the sales rep to fill out
 with st.form("input_form"):
     st.header("1. Product & Target Details")
     col1, col2 = st.columns(2)
+    # Product Name: What product are you selling?
+    # Product Category: This could be one word or a sentence (e.g., "Data Warehousing" 
+    #                   or "Cloud Data Platform"). The LLM should identify thecategory 
+    #                   from the description.
     with col1:
         product_name = st.text_input("Product Name", placeholder="e.g., Snowflake Data Cloud")
         product_category = st.text_input("Product Category", placeholder="e.g., Cloud Data Platform")
+    # Target Customer: Name of the person you are trying to sell to.
+    # Company URL: The URL of the company you are targeting. (Use this to derive the     
+    #              company  ID and other metadata.)
     with col2:
         target_customer = st.text_input("Target Customer (Name)", placeholder="e.g., John Doe")
         company_url = st.text_input("Target Company URL", placeholder="https://www.target-company.com")
-        
+
+    # Value Proposition: A sentence summarizing the product’s value.   
     value_proposition = st.text_area("Value Proposition", placeholder="Summarize your product's value...")
     
+    # Competitors: URLs of competitors (similar to the company URL input)
     st.header("2. Competitor Analysis")
     competitor_urls = st.text_area("Competitor URLs (one per line)", placeholder="https://www.competitor1.com")
 
+    # Submit form
     submitted = st.form_submit_button("Generate Insights")
 
+# Upon submission we have to retrieve the Google AI API Key from the environment variables
+# of the app.  Also check to make sure required form fields have values
 if submitted:
     if not os.getenv("GOOGLE_API_KEY"):
         st.error("Error: GOOGLE_API_KEY not found in .env file.")
@@ -60,7 +75,7 @@ if submitted:
             st.write("Processing data with Gemini Pro...")
 
     
-            # 3. Call AI Agent
+            # 3. Call AI Agent (see agent.py)
             insights = generate_sales_insights(
                 product_name, 
                 product_category, 
