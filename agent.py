@@ -10,6 +10,7 @@ def generate_sales_insights(product_name, product_category, value_prop, target_c
     genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
     
     # Initialize the model
+    # gemini-flash-latest seems to work, may try others
     model = genai.GenerativeModel('gemini-flash-latest')
 
     # Construct the Competitor String
