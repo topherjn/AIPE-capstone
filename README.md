@@ -3,6 +3,7 @@
 This repository contains a functional prototype of a Sales Assistant Agent powered by **Google Gemini 1.5 Flash**. The application helps sales representatives generate "one-pager" insights by scraping target company websites, analyzing competitors, and parsing product manuals.
 
 **[Live Demo Available Here](https://aipe-capstone.onrender.com/)**
+(It's on the fresh site Render so literally give it time to render.)
 
 ## 🚀 Key Features
 * **Automated Web Scraping:** Extracts text from target company and competitor URLs.
