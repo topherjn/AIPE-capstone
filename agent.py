@@ -2,7 +2,7 @@ import google.generativeai as genai
 import os
 
 # Define model globally or in a config so it's easy to change
-MODEL_NAME = 'gemini-1.5-flash-latest' 
+MODEL_NAME = 'gemini-2.5-flash-lite' 
 
 def generate_sales_insights(product_name, product_category, value_prop, target_customer, company_data, competitor_data_list, product_manual_text=None):
     """

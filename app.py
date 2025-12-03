@@ -48,6 +48,9 @@ with st.form("input_form"):
     st.header("2. Competitor Analysis")
     competitor_urls = st.text_area("Competitor URLs (one per line)", placeholder="https://www.competitor1.com")
 
+    # [NEW] UI Component for File Upload
+    uploaded_file = st.file_uploader("Upload Product Overview (Optional)", type=['pdf', 'txt'])
+
     # Submit form
     submitted = st.form_submit_button("Generate Insights")
 
