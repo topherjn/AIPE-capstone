@@ -41,8 +41,8 @@ with st.expander("🛠️ Advanced Settings (Model & Prompt)", expanded=False):
     
     c1, c2 = st.columns(2)
     with c1:
-        # This widget now triggers a rerun immediately on change
-        provider = st.selectbox("LLM Provider", ["Google", "GitHub"])
+            # Added "HuggingFace" to the list
+            provider = st.selectbox("LLM Provider", ["Google", "GitHub", "HuggingFace"])
         
     with c2:
         # Dynamic Default Logic
@@ -52,6 +52,9 @@ with st.expander("🛠️ Advanced Settings (Model & Prompt)", expanded=False):
         elif provider == "GitHub":
             default_model = "gpt-4o"
             help_text = "Free Tier: gpt-4o, gpt-4o-mini, Phi-3-medium-4k-instruct"
+        elif provider == "HuggingFace":
+                default_model = "meta-llama/Meta-Llama-3-8B-Instruct"
+                help_text = "Try: mistralai/Mistral-7B-Instruct-v0.3, microsoft/Phi-3-mini-4k-instruct"
         
         # The 'key' parameter ensures the widget resets when provider changes
         model_name = st.text_input(
