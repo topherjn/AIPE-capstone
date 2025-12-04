@@ -3,7 +3,7 @@
 This repository contains a functional prototype of a Sales Assistant Agent powered by **Google Gemini 1.5 Flash**. The application helps sales representatives generate "one-pager" insights by scraping target company websites, analyzing competitors, and parsing product manuals.
 
 **[Live Demo Available Here](https://aipe-capstone.onrender.com/)**
-(It's on the free site Render so literally give it time to render.)
+*(It's on the free site Render; please allow a moment for the instance to spin up.)*
 
 ## 🚀 Key Features
 * **Automated Web Scraping:** Extracts text from target company and competitor URLs.
@@ -19,18 +19,18 @@ This repository contains a functional prototype of a Sales Assistant Agent power
 * Google Gemini API Key
 
 ### Installation
-1.  **Clone the repository:**
+1. **Clone the repository:**
     ```bash
-    git clone [https://github.com/your-username/AIPE-capstone.git](https://github.com/your-username/AIPE-capstone.git)
+    git clone https://github.com/your-username/AIPE-capstone.git
     cd AIPE-capstone
     ```
 
-2.  **Install dependencies:**
+2. **Install dependencies:**
     ```bash
     pip install -r requirements.txt
     ```
 
-3.  **Configure Environment:**
+3. **Configure Environment:**
     Create a `.env` file in the root directory:
     ```text
     GOOGLE_API_KEY=your_gemini_api_key_here
