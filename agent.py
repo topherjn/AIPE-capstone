@@ -36,6 +36,23 @@ def get_llm_response(provider, model_name, full_prompt, system_role):
             )
             return response.choices[0].message.content
         
+        # --- HUGGING FACE (New) ---
+        elif provider == "HuggingFace":
+            client = OpenAI(
+                base_url="https://router.huggingface.co/v1",
+                api_key=os.getenv("HF_TOKEN")
+            )
+            response = client.chat.completions.create(
+                model=model_name,
+                messages=[
+                    {"role": "system", "content": system_role},
+                    {"role": "user", "content": full_prompt}
+                ],
+                temperature=0.7,
+                max_tokens=4096,
+            )
+            return response.choices[0].message.content
+        
         else:
             return f"Error: Provider {provider} not supported."
 
