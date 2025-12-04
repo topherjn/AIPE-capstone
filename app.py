@@ -10,24 +10,36 @@ load_dotenv()
 
 st.set_page_config(page_title="Sales Agent V2", page_icon="💼", layout="wide")
 
-# --- DEFAULT PROMPT TEMPLATE ---
 DEFAULT_PROMPT = """
 ROLE: You are an expert Sales Assistant Agent.
 OBJECTIVE: Generate a comprehensive "One-Pager" sales insight document.
 
 INSTRUCTIONS:
-1. Analyze the provided scraped data for the target company.
+1. Analyze the provided scraped data (in Markdown format).
 2. Identify strategic priorities, leadership names, and competitor relationships.
 3. Using the user's Value Proposition, craft a specific sales angle.
 4. If a Product Manual is provided, cite specific features from it.
+5. EXTRACT LINKS: You must list any relevant article links, press releases, or source URLs found in the text.
 
 OUTPUT FORMAT (Markdown):
 # Account Insights for {Target Customer}
+
 ## 1. Company Strategy
+(Summarize active strategy. Cite specific press releases if found.)
+
 ## 2. Competitor Analysis
+(Mentions of competitors or partnerships.)
+
 ## 3. Key Leadership
+(Names and titles.)
+
 ## 4. Suggested Sales Pitch
-## 5. References
+(Tailored value prop.)
+
+## 5. References & Article Links
+* **List ALL relevant hyperlinks found in the scraped text.**
+* Format: `[Title of Article/Page](URL)`
+* *If no links are found, explicitely state: "No direct source links were detected in the provided text."*
 """
 
 st.title("💼 Sales Assistant Agent (Hybrid)")
