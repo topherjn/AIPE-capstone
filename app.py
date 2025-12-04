@@ -47,7 +47,7 @@ with st.expander("🛠️ Advanced Settings (Model & Prompt)", expanded=False):
     with c2:
         # Dynamic Default Logic
         if provider == "Google":
-            default_model = "gemini-1.5-flash"
+            default_model = "gemini-2.5-pro"
             help_text = "Common: gemini-1.5-flash, gemini-1.5-pro"
         elif provider == "GitHub":
             default_model = "gpt-4o"

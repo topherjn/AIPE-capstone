@@ -46,7 +46,7 @@ def generate_sales_insights(product_name, product_category, value_prop, target_c
                             company_data, competitor_data_list, product_manual_text=None,
                             # V2 Arguments
                             provider="Google", 
-                            model_name="gemini-1.5-flash",
+                            model_name="gemini-2.5-pro",
                             system_instruction=None):
     
     # 1. Prepare Data Context
