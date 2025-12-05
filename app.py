@@ -1,8 +1,9 @@
 import streamlit as st
+import os
 from dotenv import load_dotenv
 from scraper import scrape_url
 from pdf_handler import extract_text_from_pdf
-from agent import generate_sales_insights
+from agent import generate_sales_insights, refine_sales_insights # <--- Imported new function
 
 # Load environment variables
 load_dotenv()
@@ -14,7 +15,7 @@ ROLE: You are an expert Sales Assistant Agent.
 OBJECTIVE: Generate a comprehensive "One-Pager" sales insight document.
 
 INSTRUCTIONS:
-1. Analyze the provided scraped data (in Markdown format).
+1. Analyze the provided scraped data (Markdown).
 2. Identify strategic priorities, leadership names, and competitor relationships.
 3. Using the user's Value Proposition, craft a specific sales angle.
 4. If a Product Manual is provided, cite specific features from it.
@@ -22,52 +23,35 @@ INSTRUCTIONS:
 
 OUTPUT FORMAT (Markdown):
 # Account Insights for {Target Customer}
-
 ## 1. Company Strategy
-(Summarize active strategy. Cite specific press releases if found.)
-
 ## 2. Competitor Analysis
-(Mentions of competitors or partnerships.)
-
 ## 3. Key Leadership
-(Names and titles.)
-
 ## 4. Suggested Sales Pitch
-(Tailored value prop.)
-
 ## 5. References & Article Links
-* **List ALL relevant hyperlinks found in the scraped text.**
-* Format: `[Title of Article/Page](URL)`
-* *If no links are found, explicitely state: "No direct source links were detected in the provided text."*
 """
 
 st.title("💼 Sales Assistant Agent (Hybrid)")
-st.markdown("Generate account insights using **Google Gemini**, **GitHub Models (Free Tier)**, or **HuggingFace**.")
+st.markdown("Generate account insights using **Google Gemini**, **GitHub Models**, or **Hugging Face**.")
 
-# --- 1. ADVANCED SETTINGS (OUTSIDE THE FORM FOR INTERACTIVITY) ---
-# We place this here so the 'provider' selection triggers an immediate rerun,
-# allowing the 'model_name' to update dynamically.
+# --- 1. ADVANCED SETTINGS ---
 with st.expander("🛠️ Advanced Settings (Model & Prompt)", expanded=False):
     st.info("Power User Zone: Choose your Brain and customize the Instructions.")
     
     c1, c2 = st.columns(2)
     with c1:
-            # Added "HuggingFace" to the list
-            provider = st.selectbox("LLM Provider", ["Google", "GitHub", "HuggingFace"])
+        provider = st.selectbox("LLM Provider", ["Google", "GitHub", "HuggingFace"])
         
     with c2:
-        # Dynamic Default Logic
         if provider == "Google":
-            default_model = "gemini-2.5-pro"
-            help_text = "Common: gemini-1.5-flash, gemini-2.5-pro"
+            default_model = "gemini-1.5-pro" # Updated based on your feedback
+            help_text = "Common: gemini-1.5-pro, gemini-1.5-flash"
         elif provider == "GitHub":
             default_model = "gpt-4o"
-            help_text = "Free Tier: gpt-4o, gpt-4o-mini, Phi-3-medium-4k-instruct"
+            help_text = "Free Tier: gpt-4o, gpt-4o-mini"
         elif provider == "HuggingFace":
-                default_model = "meta-llama/Meta-Llama-3-8B-Instruct"
-                help_text = "Try: mistralai/Mistral-7B-Instruct-v0.3, microsoft/Phi-3-mini-4k-instruct"
+            default_model = "meta-llama/Meta-Llama-3-8B-Instruct"
+            help_text = "Try: mistralai/Mistral-7B-Instruct-v0.3"
         
-        # The 'key' parameter ensures the widget resets when provider changes
         model_name = st.text_input(
             "Model Name", 
             value=default_model, 
@@ -75,14 +59,11 @@ with st.expander("🛠️ Advanced Settings (Model & Prompt)", expanded=False):
             key=f"model_name_{provider}"
         )
 
-        # ... inside st.expander ...
-        system_instruction = st.text_area("System Instructions", value=DEFAULT_PROMPT)
-        
-        # NEW EXPERIMENT TOGGLE
-        enable_chaining = st.checkbox("⛓️ Enable Refinement Chain (Experiment D)", 
-                                      help="Adds a second LLM pass to verify citations and accuracy.")
-
     system_instruction = st.text_area("System Instructions (Prompt)", value=DEFAULT_PROMPT, height=300)
+    
+    # NEW: Experiment Toggle
+    enable_chaining = st.checkbox("⛓️ Enable Refinement Chain (Experiment D)", 
+                                  help="Adds a second LLM pass to verify citations and accuracy.")
 
 # --- 2. MAIN INPUT FORM ---
 with st.form("input_form"):
@@ -107,12 +88,10 @@ if submitted:
     if not product_name or not company_url:
         st.warning("Please fill in the Product Name and Target Company URL.")
     else:
-        # 1. Scrape Target
         with st.status("Gathering Intelligence...", expanded=True) as status:
             st.write(f"Scraping Target: {company_url}...")
             company_data = scrape_url(company_url)
             
-            # 2. Scrape Competitors
             competitor_data_list = []
             if competitor_urls:
                 urls_list = [url.strip() for url in competitor_urls.split('\n') if url.strip()]
@@ -121,59 +100,39 @@ if submitted:
                     data = scrape_url(url)
                     competitor_data_list.append(f"Source: {url}\nContent: {data}")
             
-            # 3. Process PDF
             product_manual_text = ""
             if uploaded_file:
                 st.write("Reading Product Manual...")
                 product_manual_text = extract_text_from_pdf(uploaded_file)
             
-            # 4. Call AI Agent (Using variables from the 'Advanced Settings' block above)
-            st.write(f"Consulting {provider} ({model_name})...")
-            
+            # Step 1: Initial Draft
+            st.write(f"Drafting Insights using {provider} ({model_name})...")
             insights, used_model = generate_sales_insights(
-                product_name, 
-                product_category, 
-                value_proposition, 
-                target_customer, 
-                company_data, 
-                competitor_data_list,
-                product_manual_text,
-                provider=provider,
-                model_name=model_name,
-                system_instruction=system_instruction
+                product_name, product_category, value_proposition, target_customer, 
+                company_data, competitor_data_list, product_manual_text,
+                provider=provider, model_name=model_name, system_instruction=system_instruction
             )
             
+            # Step 2: Refinement Chain (Experiment D)
+            if enable_chaining:
+                st.write("⛓️ Chaining: Editor Mode Active...")
+                st.write("Critiquing draft against source data...")
+                
+                # Reconstruct context for the editor
+                competitor_text = "\n".join(competitor_data_list)
+                raw_data_context = f"TARGET DATA:\n{company_data}\n\nCOMPETITOR DATA:\n{competitor_text}"
+                
+                refined_insights = refine_sales_insights(
+                    insights, 
+                    raw_data_context, 
+                    provider, 
+                    model_name
+                )
+                st.write("Polishing final report...")
+                insights = refined_insights # Overwrite draft with polished version
+
             status.update(label="Analysis Complete!", state="complete", expanded=False)
 
-            # ... (Step 1 generation happens here) ...
-            insights, used_model = generate_sales_insights(...)
-            
-            # CHAINING LOGIC (Step 2)
-            if enable_chaining:
-                with st.status("🔗 Chaining: Refining Output...", expanded=True):
-                    st.write("Critiquing draft against source data...")
-                    
-                    # We need to reconstruct the data context to pass it back
-                    # (In a real app, you'd return this from the first function, but this works for a prototype)
-                    competitor_text = "\n".join(competitor_data_list)
-                    raw_data_context = f"TARGET: {company_data}\nCOMPETITORS: {competitor_text}"
-                    
-                    # Call the Refiner
-                    refined_insights = refine_sales_insights(
-                        insights, 
-                        raw_data_context, 
-                        provider, 
-                        model_name
-                    )
-                    
-                    st.write("Polishing final report...")
-                    insights = refined_insights # Overwrite the draft with the polished version
-            
-            # Display Final Result
-            st.divider()
-            st.markdown(insights)
-
-        # 5. Display Result
-        st.caption(f"Generated by: **{provider} / {used_model}**")
+        st.caption(f"Generated by: **{provider} / {used_model}** {'(Refined)' if enable_chaining else ''}")
         st.divider()
         st.markdown(insights)

@@ -2,30 +2,25 @@ import os
 import google.generativeai as genai
 from openai import OpenAI
 
-
 def get_llm_response(provider, model_name, full_prompt, system_role):
     """
-    Dispatcher function to handle Google (Native) and GitHub (OpenAI-Compatible).
+    Dispatcher function to handle Google (Native), GitHub (OpenAI-Compatible), and Hugging Face.
     """
     try:
         # --- GOOGLE GEMINI ---
         if provider == "Google":
             genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
             model = genai.GenerativeModel(model_name)
-            
-            # Gemini creates a unified context by joining system + user
             combined_prompt = f"{system_role}\n\n{full_prompt}"
             response = model.generate_content(combined_prompt)
             return response.text
 
         # --- GITHUB MODELS (Free GPT-4o) ---
         elif provider == "GitHub":
-            # GitHub Models uses the OpenAI SDK but points to Azure
             client = OpenAI(
                 base_url="https://models.inference.ai.azure.com",
                 api_key=os.getenv("GITHUB_TOKEN")
             )
-            
             response = client.chat.completions.create(
                 model=model_name,
                 messages=[
@@ -36,8 +31,8 @@ def get_llm_response(provider, model_name, full_prompt, system_role):
                 max_tokens=4096,
             )
             return response.choices[0].message.content
-        
-        # --- HUGGING FACE (New) ---
+
+        # --- HUGGING FACE ---
         elif provider == "HuggingFace":
             client = OpenAI(
                 base_url="https://router.huggingface.co/v1",
@@ -62,9 +57,8 @@ def get_llm_response(provider, model_name, full_prompt, system_role):
 
 def generate_sales_insights(product_name, product_category, value_prop, target_customer, 
                             company_data, competitor_data_list, product_manual_text=None,
-                            # V2 Arguments
                             provider="Google", 
-                            model_name="gemini-2.5-pro",
+                            model_name="gemini-1.5-pro",
                             system_instruction=None):
     
     # 1. Prepare Data Context
@@ -92,6 +86,7 @@ def generate_sales_insights(product_name, product_category, value_prop, target_c
         You are an expert Sales Assistant Agent.
         Generate a "One-Pager" sales insight document based on the provided data.
         Include: Strategy Analysis, Competitor Mentions, Leadership, and a Tailored Sales Pitch.
+        EXTRACT LINKS: You must list any relevant article links, press releases, or source URLs found in the text.
         """
 
     # 4. Call Dispatcher
@@ -108,15 +103,15 @@ def refine_sales_insights(draft_content, original_data_context, provider, model_
     ORIGINAL SOURCE DATA:
     {original_data_context[:10000]}
     
-    DRAFT INSIGHTS:
+    DRAFT INSIGHTS (To be Critiqued):
     {draft_content}
     
     TASK:
     1. Verify that all claims in the Draft are supported by the Source Data.
-    2. If the Draft is missing "Article Links" or citations found in the Source Data, add them.
+    2. CRITICAL: If the Draft is missing "Article Links" or citations found in the Source Data, ADD THEM NOW.
     3. Ensure the tone is professional and persuasive.
-    4. Output the final polished Markdown.
+    4. Output the final, polished Markdown document.
     """
     
-    # Reuse your existing dispatcher
+    # Reuse the existing dispatcher
     return get_llm_response(provider, model_name, refine_prompt, system_role)
