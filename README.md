@@ -9,7 +9,7 @@ This repository contains a functional prototype of a Sales Assistant Agent power
 * **Automated Web Scraping:** Extracts text from target company and competitor URLs.
 * **PDF Analysis:** Optional upload for product manuals or strategy decks.
 * **AI-Powered Insights:** Uses Large Language Models (LLM) to synthesize strategy, leadership info, and sales pitches.
-* **Dynamic Model Selection:** Currently running on `gemini-1.5-flash-latest` for high speed and lower latency.
+* **Dynamic Model Selection:** Currently running on `gemini-flash-latest` for high speed and lower latency.
 * **Source Citation:** Provides links to valid sources found during the scrape.
 
 ## 🛠️ Technical Setup
