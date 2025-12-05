@@ -2,6 +2,7 @@ import os
 import google.generativeai as genai
 from openai import OpenAI
 
+
 def get_llm_response(provider, model_name, full_prompt, system_role):
     """
     Dispatcher function to handle Google (Native) and GitHub (OpenAI-Compatible).
@@ -95,3 +96,27 @@ def generate_sales_insights(product_name, product_category, value_prop, target_c
 
     # 4. Call Dispatcher
     return get_llm_response(provider, model_name, data_context, system_instruction), model_name
+
+def refine_sales_insights(draft_content, original_data_context, provider, model_name):
+    """
+    CHAIN STEP 2: The Editor.
+    Takes the initial draft and the source data, then improves it.
+    """
+    system_role = "You are a Senior Editor. Your goal is to verify accuracy and improve formatting."
+    
+    refine_prompt = f"""
+    ORIGINAL SOURCE DATA:
+    {original_data_context[:10000]}
+    
+    DRAFT INSIGHTS:
+    {draft_content}
+    
+    TASK:
+    1. Verify that all claims in the Draft are supported by the Source Data.
+    2. If the Draft is missing "Article Links" or citations found in the Source Data, add them.
+    3. Ensure the tone is professional and persuasive.
+    4. Output the final polished Markdown.
+    """
+    
+    # Reuse your existing dispatcher
+    return get_llm_response(provider, model_name, refine_prompt, system_role)
