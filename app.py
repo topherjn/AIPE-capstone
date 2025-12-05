@@ -1,5 +1,4 @@
 import streamlit as st
-import os
 from dotenv import load_dotenv
 from scraper import scrape_url
 from pdf_handler import extract_text_from_pdf
