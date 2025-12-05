@@ -42,7 +42,7 @@ OUTPUT FORMAT (Markdown):
 """
 
 st.title("💼 Sales Assistant Agent (Hybrid)")
-st.markdown("Generate account insights using **Google Gemini** or **GitHub Models (Free Tier)**.")
+st.markdown("Generate account insights using **Google Gemini**, **GitHub Models (Free Tier)**, or **HuggingFace**.")
 
 # --- 1. ADVANCED SETTINGS (OUTSIDE THE FORM FOR INTERACTIVITY) ---
 # We place this here so the 'provider' selection triggers an immediate rerun,
