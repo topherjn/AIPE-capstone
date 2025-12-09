@@ -93,6 +93,16 @@ def generate_sales_insights(product_name, product_category, value_prop, target_c
     return get_llm_response(provider, model_name, data_context, system_instruction), model_name
 
 def refine_sales_insights(draft_content, original_data_context, provider, model_name):
+    
+    if provider == "Google":
+        provider = "GitHub"
+        model_name = "gpt-4o"
+    elif provider == "GitHUb":
+        provider = "HuggingFace"
+        model_name = "meta-llama/Meta-Llama-3-8B-Instruct"
+    else:
+        provider = "Google"
+        model_name = "gemini-flash-latest"
     """
     CHAIN STEP 2: The Editor.
     Takes the initial draft and the source data, then improves it.
