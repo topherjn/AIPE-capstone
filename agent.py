@@ -58,7 +58,7 @@ def get_llm_response(provider, model_name, full_prompt, system_role):
 def generate_sales_insights(product_name, product_category, value_prop, target_customer, 
                             company_data, competitor_data_list, product_manual_text=None,
                             provider="Google", 
-                            model_name="gemini-1.5-pro",
+                            model_name="gemini-flash-latest",
                             system_instruction=None):
     
     # 1. Prepare Data Context
