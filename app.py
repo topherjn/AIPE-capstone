@@ -43,7 +43,7 @@ with st.expander("🛠️ Advanced Settings (Model & Prompt)", expanded=False):
         
     with c2:
         if provider == "Google":
-            default_model = "gemini-flash-latest" # Updated based on your feedback
+            default_model = "gemini-flash-latest"
             help_text = "Common: gemini-flash-latest"
         elif provider == "GitHub":
             default_model = "gpt-4o"
