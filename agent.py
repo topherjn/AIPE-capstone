@@ -8,7 +8,7 @@ from openai import OpenAI
 LLM_CONFIG = {
     "google": {
         "provider": "Google",
-        "model_name": "gemini-1.5-flash", 
+        "model_name": "gemini-flash-latest", 
         "display_name": "Google Gemini (Flash)"
     },
     "github": {
