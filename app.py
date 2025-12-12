@@ -8,8 +8,9 @@ from agent import generate_sales_insights, refine_sales_insights, LLM_CONFIG
 # Load environment variables
 load_dotenv()
 
-st.set_page_config(page_title="Sales Agent V2", page_icon="💼", layout="wide")
+st.set_page_config(page_title="Sales Agent Insights", page_icon="💼", layout="wide")
 
+# This is the default prompt.  It can be changed by the user in the UI
 DEFAULT_PROMPT = """
 ROLE: You are an expert Sales Assistant Agent.
 OBJECTIVE: Generate a comprehensive "One-Pager" sales insight document.
@@ -50,6 +51,7 @@ with st.expander("🛠️ Advanced Settings (Model & Chain)", expanded=False):
 
     with c2:
         # Experiment D Toggle
+        # Allow chaining of initial results to a secondary evaluation step
         enable_chaining = st.checkbox(
             "⛓️ Enable Cross-Model Verification", 
             help="Experiment D: Uses a different AI provider to critique and refine the initial draft."
@@ -76,14 +78,17 @@ with st.form("input_form"):
 
     submitted = st.form_submit_button("Generate Insights")
 
+# Check submission for common user errors
 if submitted:
     if not product_name or not company_url:
         st.warning("Please fill in the Product Name and Target Company URL.")
     else:
         with st.status("Gathering Intelligence...", expanded=True) as status:
+            # Retrieve information about target company
             st.write(f"Scraping Target: {company_url}...")
             company_data = scrape_url(company_url)
             
+            # Retrieve information about targets' competitors
             competitor_data_list = []
             if competitor_urls:
                 urls_list = [url.strip() for url in competitor_urls.split('\n') if url.strip()]
@@ -92,6 +97,7 @@ if submitted:
                     data = scrape_url(url)
                     competitor_data_list.append(f"Source: {url}\nContent: {data}")
             
+            # Upload and read PDF manual for product if given
             product_manual_text = ""
             if uploaded_file:
                 st.write("Reading Product Manual...")
@@ -109,6 +115,7 @@ if submitted:
             final_attribution = f"Drafted by: **{drafter_model_name}**"
 
             # --- STEP 2: REFINEMENT CHAIN (Optional) ---
+            # The first prompt is evaluated by a different LLM
             if enable_chaining:
                 st.write("⛓️ Cross-Verification: Sending to secondary model for critique...")
                 
