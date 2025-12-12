@@ -1,4 +1,4 @@
-# Sales Agent Prototype (CAP 931) - V2.0 "AI Workbench"
+# Sales Agent Prototype (CAP 931)
 
 This repository contains a functional prototype of a Sales Assistant Agent. Originally built on **Google Gemini**, Version 2.0 has been upgraded to a "Hybrid" architecture that supports **Google Gemini**, **GitHub Models (GPT-4o)**, and **Hugging Face**.
 
